@@ -1,0 +1,15 @@
+--- #YAML:1.0
+name:                Win32-GUITaskAutomate
+version:             0.01
+abstract:            A module for automating GUI tasks.
+license:             ~
+author:              
+    - Zoffix Znet <zoffix@cpan.org>
+generated_by:        ExtUtils::MakeMaker version 6.42
+distribution_type:   module
+requires:     
+    Win32::Clipboard:              0.5201
+    Win32::GUIRobot:               0.05
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3
