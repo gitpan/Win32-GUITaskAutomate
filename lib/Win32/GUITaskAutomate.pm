@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Carp;
 use Win32::GUIRobot qw(:all);
@@ -156,7 +156,7 @@ sub do {
 
 sub drag_mouse {
     my ( $self, $button, $x, $y, $d_x, $d_y ) = @_;
-    $button = uc $button;
+    $button = ucfirst lc $button;
     croak "Invalid mouse button in ->drag_mouse (must be 'Left',"
 	    . " 'Right', or 'Middle'"
 	unless $button eq 'Left'
@@ -177,7 +177,7 @@ sub drag_mouse {
 
 sub click_mouse {
     my ( $self, $x, $y, $button, $times ) = @_;
-    $button = ucfirst $button;
+    $button = ucfirst lc $button;
     croak "Invalid mouse button in ->click_mouse (must be 'Left',"
 	    . " 'Right', or 'Middle'"
 	unless $button eq 'Left'
@@ -187,6 +187,11 @@ sub click_mouse {
     $times ||= 1;
     SendMouseClick( $x, $y, $button )  for 1 .. $times;
     return 1;
+}
+
+sub get_clip {
+    my $self = shift;
+    return $self->clip->Get;
 }
 
 sub set_clip {
@@ -219,18 +224,22 @@ Win32::GUITaskAutomate - A module for automating GUI tasks.
     use Win32::GUITaskAutomate;
     my $robot = Win32::GUITaskAutomate->new(
         load => {
-            pic1 => 'pic1.PNG',
+            pic1 => 'pic1.PNG', # load picture
         }
     );
 
-    $robot->find_do( 'pic1',
+    $robot->find_do( 'pic1', # wait for loaded pic to appear
         [
-            \ "ZOMG!!!!.pl",
-            { rmb => 1, x => 10, y => 20 },
-            "{UP}{UP}~^v",
-            { lmb => 1, x => 100, y => 100 },
+            \ "ZOMG!!!!.pl",  # put this text into clipboard
+            { rmb => 1, x => 10, y => 20 }, # click right mouse button
+            "{UP}{UP}~^v",  # press UP arrow twice, ENTER and CTRL+V
+            { lmb => 1, x => 100, y => 100 }, # click left mouse button
         ]
     );
+    
+    my $clipboard_contents = $robot->get_clip;
+    
+    $robot->set_clip( "New clipboard contents" );
 
 =head1 DESCRIPTION
 
@@ -301,6 +310,7 @@ below). Third I<optional> argument is the time in seconds to wait for the pictur
 instructions will be passed to the ->do method when the picture is
 found, and 'origin x' and 'origin y' arguments will correspond
 to coordinates of where the picture was spotted.
+
 
 =head1 ROBOT INSTRUCTIONS
 
@@ -507,9 +517,19 @@ C<$x> and C<$y> default to C<0>.
 
 =head2 set_clip
 
-    $robot->set_clip( "ZOMG!" );
+    $robot->set_clip( 'Text to put into the clipboard' );
 
-Instructs the robot to push stuff into the clipboard.
+Takes one argument which will be put into the clipboard. Technically this
+can be anything accepted by the L<Win32::Clipboard> C<Set()> method, but
+was tested only with textual content.
+
+=head2 get_clip
+
+    my $clipboard_stuff = $robot->get_clip;
+
+Takes no arguments. Returns clipboard contents. Technically this may be
+anything returned by L<Win32::Clipboard> C<Get()> method, but was tested
+only with textual content.
 
 =head2 clip
 
@@ -657,7 +677,16 @@ C<TAB> key and press C<ENTER> again.
 
 =head1 SEE ALSO
 
-L<Win32::GUIRobot>, L<Win32::GuiTest>
+L<Win32::GUIRobot>, L<Win32::GuiTest>, L<Win32::Clipboard>
+
+=head1 PREREQUISITES
+
+This module requires L<Win32::GUIRobot>, L<Win32::Clipboard> as
+well as L<Test::More> for C<make test>
+
+=head1 BUGS
+
+None known.
 
 =head1 AUTHOR
 

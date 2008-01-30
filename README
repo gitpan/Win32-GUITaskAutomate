@@ -1,4 +1,4 @@
-Win32-GUITaskAutomate version 0.01
+Win32-GUITaskAutomate version 0.02
 ==================================
 
 The README is used to introduce the module and provide instructions on
@@ -32,7 +32,7 @@ COPYRIGHT AND LICENCE
 
 Put the correct copyright and licence information here.
 
-Copyright (C) 2008 by zoffix
+Copyright (C) 2008 by Zoffix Znet
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,

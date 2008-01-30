@@ -3,5 +3,7 @@ Makefile.PL
 MANIFEST
 README
 t/Win32-GUITaskAutomate.t
+t/99-pod-coverage.t
+t/98-pod.t
 lib/Win32/GUITaskAutomate.pm
 META.yml                                 Module meta-data (added by MakeMaker)

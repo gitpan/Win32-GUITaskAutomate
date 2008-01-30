@@ -1,5 +1,9 @@
 Revision history for Perl extension Win32::GUITaskAutomate.
 
+0.02  Thu Jan 30 16:35:45 2008
+    - fixed drag mouse "invalid mouse button" bug
+        and added get_clip() method.
+
 0.01  Thu Jan 17 17:50:45 2008
 	- original version; created by h2xs 1.23 with options
 		-A -X -c --skip-exporter -v 0.01 -n Win32::GUITaskAutomate
