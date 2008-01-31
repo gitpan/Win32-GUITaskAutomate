@@ -1,6 +1,10 @@
 Revision history for Perl extension Win32::GUITaskAutomate.
 
-0.02  Thu Jan 30 16:35:45 2008
+0.03  Thu Jan 31 17:18:33 2008
+    - added a 'save' and 'restore' robot instructions
+	for saving and restoring mouse cursor position. 
+
+0.02  Wed Jan 30 16:35:45 2008
     - fixed drag mouse "invalid mouse button" bug
         and added get_clip() method.
 

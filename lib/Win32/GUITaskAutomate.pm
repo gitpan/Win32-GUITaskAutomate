@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Carp;
 use Win32::GUIRobot qw(:all);
@@ -106,39 +106,47 @@ sub do {
             elsif ( $action->{mw} ) {
                 MouseMoveWheel( $action->{mw} );
             }
-	    elsif ( $action->{mmb} ) {
-		$self->click_mouse( $m_x, $m_y, 'Middle' );
-	    }
-	    elsif ( $action->{mmbd} ) {
-		$self->click_mouse( $m_x, $m_y, 'Middle', 2 );
-	    }
+            elsif ( $action->{mmb} ) {
+                $self->click_mouse( $m_x, $m_y, 'Middle' );
+            }
+            elsif ( $action->{mmbd} ) {
+                $self->click_mouse( $m_x, $m_y, 'Middle', 2 );
+            }
             elsif ( $action->{drag} ) {
-		$self->drag_mouse(
-		    'LEFT',
-		    $m_x,
-		    $m_y,
-		    $origin_x + $action->{d_x},
-		    $origin_x + $action->{d_y},
-		);
+                $self->drag_mouse(
+                    'LEFT',
+                    $m_x,
+                    $m_y,
+                    $origin_x + $action->{d_x},
+                    $origin_x + $action->{d_y},
+                );
             }
-	    elsif ( $action->{rdrag} ) {
-		$self->drag_mouse(
-		    'RIGHT',
-		    $m_x,
-		    $m_y,
-		    $origin_x + $action->{d_x},
-		    $origin_x + $action->{d_y},
-		);
+            elsif ( $action->{rdrag} ) {
+                $self->drag_mouse(
+                    'RIGHT',
+                    $m_x,
+                    $m_y,
+                    $origin_x + $action->{d_x},
+                    $origin_x + $action->{d_y},
+                );
             }
-	    elsif ( $action->{mdrag} ) {
-		$self->drag_mouse(
-		    'MIDDLE',
-		    $m_x,
-		    $m_y,
-		    $origin_x + $action->{d_x},
-		    $origin_x + $action->{d_y},
-		);
-	    }
+            elsif ( $action->{mdrag} ) {
+                $self->drag_mouse(
+                    'MIDDLE',
+                    $m_x,
+                    $m_y,
+                    $origin_x + $action->{d_x},
+                    $origin_x + $action->{d_y},
+                );
+            }
+            elsif ( $action->{save} ) {
+                $self->mouse_coords( [  GetCursorPos() ] );
+            }
+            elsif ( $action->{restore} ) {
+                return 1
+                    unless ref $self->mouse_coords() eq 'ARRAY';
+                MouseMoveAbsPix( @{ $self->mouse_coords } );
+            }
         }
         elsif ( ref $action eq 'ARRAY' ) {
             Sleep( $action->[0] );
@@ -208,6 +216,15 @@ sub clip {
     return $self->{ CLIP };
 }
 
+sub mouse_coords {
+    my $self = shift;
+    if ( @_ ) {
+        $self->{ MOUSE_COORDS } = shift;
+    }
+    return $self->{ MOUSE_COORDS };
+}
+
+
 1;
 
 
@@ -230,10 +247,12 @@ Win32::GUITaskAutomate - A module for automating GUI tasks.
 
     $robot->find_do( 'pic1', # wait for loaded pic to appear
         [
+            { save => 1 }, # save mouse cursor position
             \ "ZOMG!!!!.pl",  # put this text into clipboard
             { rmb => 1, x => 10, y => 20 }, # click right mouse button
             "{UP}{UP}~^v",  # press UP arrow twice, ENTER and CTRL+V
             { lmb => 1, x => 100, y => 100 }, # click left mouse button
+            { restore => 1 }, # restore original mouse cursor position
         ]
     );
     
@@ -385,6 +404,13 @@ Right mouse button drag
 
 Middle mouse button drag
 
+=item save
+
+Save mouse cursor position
+
+=item restore
+
+Restore mouse cursor position to an earlier save setting ( see C<save> )
 
 =back
 
@@ -487,6 +513,25 @@ Same as C<drag> except drags with B<right> mouse button.
 
 Same as C<drag> except drags with B<middle> mouse button.
 
+=head3 save
+
+    { save => 1 }
+
+Instructs the robot to save current mouse cursor position. This is
+useful if you want your robot to do some mouse clickety and restore
+the original cursor position when finished (see C<restore> below). The value
+of the key must be a true value or nothing will happen.
+
+=head3 restore
+
+    { restore => 1 }
+
+Instructs the robot to restore saved mouse cursor position. This is
+useful if you want your robot to do some mouse clickety and restore
+the original cursor position when finished (see C<save> above). The value
+of the key must be a true value or nothing will happen. If you never
+saved any positions with C<save> (see above) nothing will happen.
+
 =head1 OTHER METHODS
 
 
@@ -544,6 +589,21 @@ Returns Win32::Clipboard object if you'll ever need it.
 Returns a hashref of loaded images. It's the one from the C<load>
 option of the ->new methods as well as from the ->load method.
 You might want to check if a certain picture was already loaded.
+
+=head2 mouse_coords
+
+    my $mouse_coords_ref = $robot->mouse_coords;
+
+    $robot->mouse_coords( [ 200, 100 ] );
+
+Returns an arrayref with two elements: x and y coordinates of the mouse
+cursor which were stored with C<save> intruction (see ROBOT INSTRUCTIONS
+for more info). Will return C<undef> if you never saved any positions
+and never set them with C<mouse_coords()> method. Takes one I<optional>
+argument which is an arrayref with two elements: x and y coordinates. 
+I<Note:> if you specificly set coordinates with this method they will
+distroy the ones that were saved with C<save> robot instruction and will
+be used by C<restore> robot instruction.
 
 =head1 EXAMPLES
 
