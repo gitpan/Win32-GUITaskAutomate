@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Carp;
 use Win32::GUIRobot qw(:all);
@@ -37,15 +37,15 @@ sub load {
     keys %$pics_ref;
     my $robot_pics_ref = $self->pics;
     while ( my ( $name, $filename ) = each %$pics_ref ) {
-	my $image = LoadImage( $filename );
-	croak "Cannot load '$filename': $@" unless $image;
+    my $image = LoadImage( $filename );
+    croak "Cannot load '$filename': $@" unless $image;
 
-	croak "Image '$filename' is of different depth than the screen" 
-		if ImageDepth( $image ) != ScreenDepth();
-	croak "Image '$filename' is wider than the screen" 
-		if ImageWidth( $image ) > ScreenWidth();
-	croak "Image '$filename' is higher than the screen" 
-		if ImageHeight( $image ) > ScreenHeight();
+    croak "Image '$filename' is of different depth than the screen" 
+        if ImageDepth( $image ) != ScreenDepth();
+    croak "Image '$filename' is wider than the screen" 
+        if ImageWidth( $image ) > ScreenWidth();
+    croak "Image '$filename' is higher than the screen" 
+        if ImageHeight( $image ) > ScreenHeight();
 
         $robot_pics_ref->{ $name } = $image;
     }
@@ -118,7 +118,7 @@ sub do {
                     $m_x,
                     $m_y,
                     $origin_x + $action->{d_x},
-                    $origin_x + $action->{d_y},
+                    $origin_y + $action->{d_y},
                 );
             }
             elsif ( $action->{rdrag} ) {
@@ -127,7 +127,7 @@ sub do {
                     $m_x,
                     $m_y,
                     $origin_x + $action->{d_x},
-                    $origin_x + $action->{d_y},
+                    $origin_y + $action->{d_y},
                 );
             }
             elsif ( $action->{mdrag} ) {
@@ -136,7 +136,7 @@ sub do {
                     $m_x,
                     $m_y,
                     $origin_x + $action->{d_x},
-                    $origin_x + $action->{d_y},
+                    $origin_y + $action->{d_y},
                 );
             }
             elsif ( $action->{save} ) {
@@ -166,11 +166,11 @@ sub drag_mouse {
     my ( $self, $button, $x, $y, $d_x, $d_y ) = @_;
     $button = ucfirst lc $button;
     croak "Invalid mouse button in ->drag_mouse (must be 'Left',"
-	    . " 'Right', or 'Middle'"
-	unless $button eq 'Left'
-	    or $button eq 'Right'
-	    or $button eq 'Middle';
-	    
+        . " 'Right', or 'Middle'"
+    unless $button eq 'Left'
+        or $button eq 'Right'
+        or $button eq 'Middle';
+        
     $x   ||= 0;
     $y   ||= 0;
     $d_x ||= 0;
@@ -187,11 +187,11 @@ sub click_mouse {
     my ( $self, $x, $y, $button, $times ) = @_;
     $button = ucfirst lc $button;
     croak "Invalid mouse button in ->click_mouse (must be 'Left',"
-	    . " 'Right', or 'Middle'"
-	unless $button eq 'Left'
-	    or $button eq 'Right'
-	    or $button eq 'Middle';
-	    
+        . " 'Right', or 'Middle'"
+    unless $button eq 'Left'
+        or $button eq 'Right'
+        or $button eq 'Middle';
+        
     $times ||= 1;
     SendMouseClick( $x, $y, $button )  for 1 .. $times;
     return 1;
@@ -613,22 +613,22 @@ Here are some examples with explanations of how the robot would behave
 
     use Win32::GUITaskAutomate;
     my $robot = Win32::GUITaskAutomate->new(
-	load => {
-	    task  => 'task.png',
-	    task2 => 'task2.png',
-	}
+    load => {
+        task  => 'task.png',
+        task2 => 'task2.png',
+    }
     );
     
     $robot->find_do( 'task', [
-	{ lmb => 1, x => 5, y => 5 },
-	[2],
+    { lmb => 1, x => 5, y => 5 },
+    [2],
     ]);
     
     $robot->find_do( 'task2', [
-	"^t",
-	[1.1],
-	\ "Hello World!",
-	"^v~",
+    "^t",
+    [1.1],
+    \ "Hello World!",
+    "^v~",
     ]);
 
 The code is interpreted as follows:
@@ -677,22 +677,22 @@ with C<CTRL+V> and press C<ENTER> key.
 
     use Win32::GUITaskAutomate;
     my $robot = Win32::GUITaskAutomate->new(
-	load => {
-	    pic => 'pic1.png',
-	}
+    load => {
+        pic => 'pic1.png',
+    }
     );
     
     $robot->find_do( 'pic',
-	{ lmb => $do_click, x => 10, y => 20 },
-	"~{TAB}OH HAI~",
-	{ drag => $do_drag, d_x => 100, d_y => 200 },
+    { lmb => $do_click, x => 10, y => 20 },
+    "~{TAB}OH HAI~",
+    { drag => $do_drag, d_x => 100, d_y => 200 },
     );
     
     if ( $do_click ) {
-	$robot->load( { pic2 => 'pic2.png } );
-	$robot->find_do(
-	    "~~~{TAB}~",
-	);
+    $robot->load( { pic2 => 'pic2.png } );
+    $robot->find_do(
+        "~~~{TAB}~",
+    );
     }
 
 The code is interpreted as follows, consider that C<$do_click>
@@ -744,21 +744,51 @@ L<Win32::GUIRobot>, L<Win32::GuiTest>, L<Win32::Clipboard>
 This module requires L<Win32::GUIRobot>, L<Win32::Clipboard> as
 well as L<Test::More> for C<make test>
 
-=head1 BUGS
-
-None known.
-
 =head1 AUTHOR
 
-Zoffix Znet, E<lt>zoffix@cpan.orgE<gt>
+Zoffix Znet, C<< <zoffix at cpan.org> >>
 
-=head1 COPYRIGHT AND LICENSE
+=head1 BUGS
 
-Copyright (C) 2008 by Zoffix Znet
+Please report any bugs or feature requests to C<bug-win32-guitaskautomate at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Win32-GUITaskAutomate>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.8 or,
-at your option, any later version of Perl 5 you may have available.
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Win32::GUITaskAutomate
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Win32-GUITaskAutomate>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Win32-GUITaskAutomate>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Win32-GUITaskAutomate>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Win32-GUITaskAutomate>
+
+=back
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2008 Zoffix Znet, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 
 =cut
+

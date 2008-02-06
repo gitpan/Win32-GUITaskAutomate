@@ -1,9 +1,11 @@
+Build.PL
 Changes
-Makefile.PL
 MANIFEST
 README
-t/Win32-GUITaskAutomate.t
-t/99-pod-coverage.t
-t/98-pod.t
+examples/draw.pl
 lib/Win32/GUITaskAutomate.pm
-META.yml                                 Module meta-data (added by MakeMaker)
+t/00-load.t
+t/pod-coverage.t
+t/pod.t
+Makefile.PL
+META.yml
