@@ -1,6 +1,6 @@
 ---
 name: Win32-GUITaskAutomate
-version: 0.04
+version: 0.05
 author:
   - 'Zoffix Znet <zoffix@cpan.org>'
 abstract: A module for automating GUI tasks.
@@ -16,7 +16,7 @@ build_requires:
 provides:
   Win32::GUITaskAutomate:
     file: lib/Win32/GUITaskAutomate.pm
-    version: 0.04
+    version: 0.05
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

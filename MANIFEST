@@ -4,6 +4,7 @@ MANIFEST
 README
 examples/draw.pl
 lib/Win32/GUITaskAutomate.pm
+t/kwalitee.t
 t/00-load.t
 t/pod-coverage.t
 t/pod.t

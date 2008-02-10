@@ -1,5 +1,8 @@
 Revision history for Win32-GUITaskAutomate
 
+0.05  Sun Feb 10  2:06:00 2008
+    - fixed pod error to increase Kwalitee, no code base changes
+
 0.04  Wed Feb 6  17:53:00 2008
     - fixed the coordinates bug for "drag" functions
         included "examples/draw.pl"
