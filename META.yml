@@ -1,23 +1,27 @@
 ---
-name: Win32-GUITaskAutomate
-version: 0.05
+abstract: 'A module for automating GUI tasks.'
 author:
   - 'Zoffix Znet <zoffix@cpan.org>'
-abstract: A module for automating GUI tasks.
+build_requires:
+  Test::More: 0
+configure_requires:
+  Module::Build: 0
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4007, CPAN::Meta::Converter version 2.132830'
 license: perl
-resources:
-  license: http://dev.perl.org/licenses/
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Win32-GUITaskAutomate
+provides:
+  Win32::GUITaskAutomate:
+    file: lib/Win32/GUITaskAutomate.pm
+    version: 0.06
 requires:
   Carp: 1.04
   Win32::Clipboard: 0.5201
   Win32::GUIRobot: 0.05
-build_requires:
-  Test::More: 0
-provides:
-  Win32::GUITaskAutomate:
-    file: lib/Win32/GUITaskAutomate.pm
-    version: 0.05
-generated_by: Module::Build version 0.2808
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  perl: 5.008008
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.06

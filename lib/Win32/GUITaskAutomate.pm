@@ -1,11 +1,10 @@
 package Win32::GUITaskAutomate;
 
-use 5.008008;
 use strict;
 use warnings;
 
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Carp;
 use Win32::GUIRobot qw(:all);
@@ -14,10 +13,10 @@ use Win32::Clipboard;
 
 sub new {
     my ( $class, %args ) = @_;
-    
+
     my $self = { PICS => {} };
     bless $self, $class;
-    
+
     if ( ref $args{load} ) {
         if ( ref $args{load} eq 'HASH' ) {
             $self->load( $args{load} );
@@ -27,30 +26,30 @@ sub new {
         }
     }
     $self->clip( Win32::Clipboard );
-    
+
     return $self;
 }
 
 sub load {
     my ( $self, $pics_ref )= @_;
-    
+
     keys %$pics_ref;
     my $robot_pics_ref = $self->pics;
     while ( my ( $name, $filename ) = each %$pics_ref ) {
     my $image = LoadImage( $filename );
     croak "Cannot load '$filename': $@" unless $image;
 
-    croak "Image '$filename' is of different depth than the screen" 
+    croak "Image '$filename' is of different depth than the screen"
         if ImageDepth( $image ) != ScreenDepth();
-    croak "Image '$filename' is wider than the screen" 
+    croak "Image '$filename' is wider than the screen"
         if ImageWidth( $image ) > ScreenWidth();
-    croak "Image '$filename' is higher than the screen" 
+    croak "Image '$filename' is higher than the screen"
         if ImageHeight( $image ) > ScreenHeight();
 
         $robot_pics_ref->{ $name } = $image;
     }
 }
-    
+
 sub pics {
     my $self = shift;
     if ( @_ ) {
@@ -63,19 +62,19 @@ sub find_do {
     my ( $self, $name, $what_ref, $wait) = @_;
     croak '$what_ref must be an ARRAYREF!!'
         unless ref $what_ref eq 'ARRAY';
-        
+
     $wait ||= 100.1;
     my $pic = $self->pics->{ $name }
         or croak "Invalid image name in find_do{}";
     my $wait_ref = WaitForImage( $pic, maxwait => $wait );
-    
+
     unless ( ref $wait_ref and exists $wait_ref->{ok} ) {
         carp "Could not find image $name :(";
         return;
     }
 
     $self->do( $what_ref, @{ $wait_ref }{ qw(x y) } );
-    
+
     return 1;
 }
 
@@ -90,7 +89,7 @@ sub do {
 
             my $m_x = $origin_x + $action->{x};
             my $m_y = $origin_y + $action->{y};
-            
+
             if ( $action->{lmb} ) {
                 $self->click_mouse( $m_x, $m_y, 'Left' );
             }
@@ -158,8 +157,8 @@ sub do {
             SendKeys( $action );
         }
     }
-    
-    return 1;    
+
+    return 1;
 }
 
 sub drag_mouse {
@@ -170,7 +169,7 @@ sub drag_mouse {
     unless $button eq 'Left'
         or $button eq 'Right'
         or $button eq 'Middle';
-        
+
     $x   ||= 0;
     $y   ||= 0;
     $d_x ||= 0;
@@ -191,7 +190,7 @@ sub click_mouse {
     unless $button eq 'Left'
         or $button eq 'Right'
         or $button eq 'Middle';
-        
+
     $times ||= 1;
     SendMouseClick( $x, $y, $button )  for 1 .. $times;
     return 1;
@@ -232,6 +231,8 @@ sub mouse_coords {
 1;
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Win32::GUITaskAutomate - A module for automating GUI tasks.
@@ -255,9 +256,9 @@ Win32::GUITaskAutomate - A module for automating GUI tasks.
             { restore => 1 }, # restore original mouse cursor position
         ]
     );
-    
+
     my $clipboard_contents = $robot->get_clip;
-    
+
     $robot->set_clip( "New clipboard contents" );
 
 =head1 DESCRIPTION
@@ -291,7 +292,7 @@ below) and values being the filenames of those pictures.
 
     $robot->load( { pic1 => 'pic1.png', pic2 => 'pic2.png' } );
 
-This method loads image(s). It takes a hashref with picure names (see C<find_do> method below) as keys and filenames as values. You 
+This method loads image(s). It takes a hashref with picure names (see C<find_do> method below) as keys and filenames as values. You
 may want to use C<load> argument to the C<new> method instead.
 
 =head2 do
@@ -489,10 +490,10 @@ wheel "up" and negative values spin the wheel "down".
     { drag => 1, x => 200, d_y => -200 }
 
 Instructs the robot to drag with left mouse button (as in left
-mouse button down => move mouse => left mouse button up). 
+mouse button down => move mouse => left mouse button up).
 As with C<lmb>, the value for the C<drag> key must be a I<true value>
 in order for the instruction to be executed. Takes I<four> optional
-arguments. They all will default to C<0> if not specified. C<x> and 
+arguments. They all will default to C<0> if not specified. C<x> and
 C<y> are the starting point of the drag (relative to the origin) and
 C<d_x> and C<d_y> are ending points of the drag (again relative to
 the B<origin>, not the place of the start of the drag).
@@ -600,7 +601,7 @@ Returns an arrayref with two elements: x and y coordinates of the mouse
 cursor which were stored with C<save> intruction (see ROBOT INSTRUCTIONS
 for more info). Will return C<undef> if you never saved any positions
 and never set them with C<mouse_coords()> method. Takes one I<optional>
-argument which is an arrayref with two elements: x and y coordinates. 
+argument which is an arrayref with two elements: x and y coordinates.
 I<Note:> if you specificly set coordinates with this method they will
 distroy the ones that were saved with C<save> robot instruction and will
 be used by C<restore> robot instruction.
@@ -618,12 +619,12 @@ Here are some examples with explanations of how the robot would behave
         task2 => 'task2.png',
     }
     );
-    
+
     $robot->find_do( 'task', [
     { lmb => 1, x => 5, y => 5 },
     [2],
     ]);
-    
+
     $robot->find_do( 'task2', [
     "^t",
     [1.1],
@@ -681,13 +682,13 @@ with C<CTRL+V> and press C<ENTER> key.
         pic => 'pic1.png',
     }
     );
-    
+
     $robot->find_do( 'pic',
     { lmb => $do_click, x => 10, y => 20 },
     "~{TAB}OH HAI~",
     { drag => $do_drag, d_x => 100, d_y => 200 },
     );
-    
+
     if ( $do_click ) {
     $robot->load( { pic2 => 'pic2.png } );
     $robot->find_do(
